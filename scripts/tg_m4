@@ -1,7 +1,14 @@
-#!/bin/sh
+#!/usr/bin/env bash
+
+set -e
+set -o pipefail
 
 if [ -z "$1" ]; then
     echo "Usage: $0 <data_dir>"
+    exit 1
+fi
+if [ ! -f "$1" ]; then
+    echo "$1 missing"
     exit 1
 fi
 sort | uniq | autom4te -l m4sugar "$1" -
