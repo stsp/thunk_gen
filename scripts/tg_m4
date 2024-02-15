@@ -1,0 +1,7 @@
+#!/bin/sh
+
+if [ -z "$1" ]; then
+    echo "Usage: $0 <data_dir>"
+    exit 1
+fi
+sort | uniq | autom4te -l m4sugar "$1" -

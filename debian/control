@@ -1,0 +1,21 @@
+Source: thunk-gen
+Section: devel
+Priority: optional
+Maintainer: Stas Sergeev <stsp2@yandex.ru>
+Standards-Version: 3.9.7
+Build-Depends:
+    meson,
+    ninja-build,
+    bison,
+    flex,
+    gcc,
+    binutils,
+    debhelper (>= 9~)
+Homepage: https://github.com/stsp/thunk_gen
+
+Package: thunk-gen
+Architecture: any
+Section: devel
+Depends: ${misc:Depends}, ${shlibs:Depends}, autoconf
+Description: thunk generator
+ Thunk generator for C and assembler code.
