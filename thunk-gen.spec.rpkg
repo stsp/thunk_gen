@@ -1,0 +1,46 @@
+#
+# spec file for package thunk_gen
+#
+
+Name: {{{ git_dir_name }}}
+Version: {{{ git_dir_version }}}
+Release: 1%{?dist}
+Summary: thunk generator
+
+Group: Development/Tools
+
+License: GPLv3+
+URL: https://github.com/dosemu2/thunk_gen
+VCS: {{{ git_dir_vcs }}}
+Source0: {{{ git_dir_archive }}}
+
+BuildRequires: meson
+BuildRequires: ninja-build
+BuildRequires: bison
+BuildRequires: flex
+BuildRequires: gcc
+BuildRequires: binutils
+
+%description
+Thunk generator for C and assembler code.
+
+%prep
+{{{ git_dir_setup_macro }}}
+
+%build
+./configure build --prefix %{_prefix}
+meson compile --verbose -C build %{?_smp_mflags}
+
+%check
+
+%install
+meson install -C build --destdir %{buildroot}
+
+%files
+%defattr(-,root,root)
+%{_libexecdir}/thunk_gen/*
+%{_datadir}/thunk_gen/*
+%{_libdir}/pkgconfig/thunk_gen.pc
+
+%changelog
+{{{ git_dir_changelog }}}
