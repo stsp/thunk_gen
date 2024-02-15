@@ -21,6 +21,9 @@ BuildRequires: flex
 BuildRequires: gcc
 BuildRequires: binutils
 
+Requires: bash
+Requires: autoconf
+
 %description
 Thunk generator for C and assembler code.
 

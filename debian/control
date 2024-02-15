@@ -16,6 +16,6 @@ Homepage: https://github.com/stsp/thunk_gen
 Package: thunk-gen
 Architecture: any
 Section: devel
-Depends: ${misc:Depends}, ${shlibs:Depends}, autoconf
+Depends: ${misc:Depends}, ${shlibs:Depends}, bash, autoconf
 Description: thunk generator
  Thunk generator for C and assembler code.
