@@ -1,0 +1,23 @@
+#!/bin/sh
+
+if [ -z "$1" ] ; then
+    BLD="build"
+else
+    BLD="$1"
+    shift
+fi
+
+TOP=$(dirname "$0")
+
+if [ -z "${PREFIX}" ] ; then
+    PREFIX="/usr/local"
+fi
+
+meson setup --prefix ${PREFIX} \
+  $BLD $TOP $*
+[ "$?" = "0" ] || exit 1
+
+echo
+echo "Done configure"
+echo "Now run \"meson compile --verbose -C $BLD\" to build"
+echo "After that you can do \"sudo meson install -C $BLD\" to install"
