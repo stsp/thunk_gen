@@ -1,8 +1,8 @@
 #
-# spec file for package thunk_gen
+# spec file for package thunk-gen
 #
 
-Name: {{{ git_dir_name }}}
+Name: thunk-gen
 Version: {{{ git_dir_version }}}
 Release: 1%{?dist}
 Summary: thunk generator
