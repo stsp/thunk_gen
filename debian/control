@@ -4,6 +4,7 @@ Priority: optional
 Maintainer: Stas Sergeev <stsp2@yandex.ru>
 Standards-Version: 3.9.7
 Build-Depends:
+    bash,
     meson,
     ninja-build,
     bison,
