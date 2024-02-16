@@ -2,6 +2,14 @@ project('thunk_gen', 'c', version: '0.1')
 
 subdir('src')
 pkg = import('pkgconfig')
+if meson.version().version_compare('>=0.56')
+UV = ['binary=' + meson.project_build_root() / 'src' /
+       meson.project_name(),
+      'tgscript=' + meson.project_source_root() / 'scripts/tg_m4',
+      'm4script=' + meson.project_source_root() / 'scripts/thunks.m4']
+else
+UV = []
+endif
 pkg.generate(
   name: meson.project_name(),
   description: 'thunk generator',
@@ -11,10 +19,7 @@ pkg.generate(
                meson.project_name() / 'tg_m4',
               'm4script=${prefix}' / get_option('datadir') /
                meson.project_name() / 'thunks.m4'],
-  uninstalled_variables: ['binary=' + meson.project_build_root() / 'src' /
-               meson.project_name(),
-              'tgscript=' + meson.project_source_root() / 'scripts/tg_m4',
-              'm4script=' + meson.project_source_root() / 'scripts/thunks.m4']
+  uninstalled_variables: UV
 )
 install_data('scripts/thunks.m4')
 install_data('scripts/tg_m4',
