@@ -33,7 +33,7 @@ Thunk generator for C and assembler code.
 {{{ git_dir_setup_macro }}}
 
 %build
-./configure build --prefix %{_prefix}
+./configure --prefix %{_prefix} build
 meson compile --verbose -C build %{?_smp_mflags}
 
 %check

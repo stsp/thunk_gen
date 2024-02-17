@@ -1,5 +1,5 @@
 #!/usr/bin/make -f
 
 %:
-	./configure build --prefix /usr
+	./configure --prefix /usr build
 	dh $@ --buildsystem=meson --builddirectory=build
