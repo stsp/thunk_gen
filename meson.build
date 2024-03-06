@@ -6,7 +6,9 @@ if meson.version().version_compare('>=0.56')
 UV = ['binary=' + meson.project_build_root() / 'src' /
        meson.project_name(),
       'tgscript=' + meson.project_source_root() / 'scripts/tg_m4',
-      'm4script=' + meson.project_source_root() / 'scripts/thunks.m4']
+      'pdscript=' + meson.project_source_root() / 'scripts/parse_decls.sh',
+      'm4script=' + meson.project_source_root() / 'scripts/thunks.m4'
+     ]
 else
 UV = []
 endif
@@ -17,11 +19,14 @@ pkg.generate(
                meson.project_name() / meson.project_name(),
               'tgscript=${prefix}' / get_option('libexecdir') /
                meson.project_name() / 'tg_m4',
+              'pdscript=${prefix}' / get_option('libexecdir') /
+               meson.project_name() / 'parse_decls.sh',
               'm4script=${prefix}' / get_option('datadir') /
-               meson.project_name() / 'thunks.m4'],
+               meson.project_name() / 'thunks.m4'
+             ],
   uninstalled_variables: UV
 )
 install_data('scripts/thunks.m4')
-install_data('scripts/tg_m4',
+install_data(['scripts/tg_m4', 'scripts/parse_decls.sh'],
   install_dir: get_option('prefix') / get_option('libexecdir') /
     meson.project_name())
