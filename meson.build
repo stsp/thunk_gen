@@ -7,7 +7,8 @@ UV = ['binary=' + meson.project_build_root() / 'src' /
        meson.project_name(),
       'tgscript=' + meson.project_source_root() / 'scripts/tg_m4',
       'pdscript=' + meson.project_source_root() / 'scripts/parse_decls.sh',
-      'm4script=' + meson.project_source_root() / 'scripts/thunks.m4'
+      'm4script=' + meson.project_source_root() / 'scripts/thunks.m4',
+      'makeinc=' + meson.project_source_root() / 'scripts/thunk_gen.mk'
      ]
 else
 UV = []
@@ -22,11 +23,13 @@ pkg.generate(
               'pdscript=${prefix}' / get_option('libexecdir') /
                meson.project_name() / 'parse_decls.sh',
               'm4script=${prefix}' / get_option('datadir') /
-               meson.project_name() / 'thunks.m4'
+               meson.project_name() / 'thunks.m4',
+              'makeinc=${prefix}' / get_option('datadir') /
+               meson.project_name() / 'thunk_gen.mk'
              ],
   uninstalled_variables: UV
 )
-install_data('scripts/thunks.m4')
+install_data(['scripts/thunks.m4', 'scripts/thunk_gen.mk'])
 install_data(['scripts/tg_m4', 'scripts/parse_decls.sh'],
   install_dir: get_option('prefix') / get_option('libexecdir') /
     meson.project_name())
