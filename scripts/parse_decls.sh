@@ -11,7 +11,7 @@ gen_plt_inc() {
 }
 
 gen_asms_tmp() {
-	grep 'ASMFUNC\|ASMPASCAL' "$1" | grep -v "//" | nl -n ln -v 0
+	grep 'ASMFUNC\|ASMPASCAL' "$1" | grep -v "//" | grep -v "#define" | nl -n ln -v 0
 }
 
 gen_plt_asmc() {
