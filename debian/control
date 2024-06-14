@@ -16,7 +16,15 @@ Homepage: https://github.com/stsp/thunk_gen
 
 Package: thunk-gen
 Architecture: any
-Section: devel
-Depends: ${misc:Depends}, ${shlibs:Depends}, bash, autoconf, pkg-config
-Description: thunk generator
- Thunk generator for C and assembler code.
+Depends:
+ autoconf,
+ pkg-config,
+ ${misc:Depends},
+ ${shlibs:Depends}
+Description: 64-bit thunk generator for 16- and 32-bit code
+ thunk-gen is a thunk generator for C and assembler code, providing
+ wrappers so that code written for 16- or 32-bit environments can be
+ compiled for 64-bit environments.
+ .
+ It is intended for use with 64-bit DOS-style environments running
+ code intended for 16- or 32-bit DOS, typically dosemu2.
