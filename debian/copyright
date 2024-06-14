@@ -1,5 +1,5 @@
 thunk_gen - thunk generator for C and assembler code.
-Copyright (C) 2018  Stas Sergeev (stsp)
+Copyright (C) 2018-2024  Stas Sergeev (stsp)
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
