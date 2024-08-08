@@ -34,6 +34,7 @@ static int is_cbk;
 static int is_void;
 static int is_rvoid;
 static int is_const;
+static int is_out;
 static int is_pas;
 static int is_init;
 static int is_noret;
@@ -58,6 +59,7 @@ static void beg_arg(void)
     is_cbk = 0;
     is_void = 0;
     is_const = 0;
+    is_out = 0;
     cvtype = CVTYPE_OTHER;
     arr_sz = 0;
     atype[0] = 0;
@@ -79,6 +81,15 @@ static void init_line(void)
     is_noret = 0;
     rlen = 0;
     beg_arg();
+}
+
+static const char *get_pref(void)
+{
+    if (is_const)
+	return "C";
+    if (is_out)
+	return "O";
+    return "";
 }
 
 static void do_start_arg(int anum)
@@ -112,10 +123,10 @@ static void do_start_arg(int anum)
 		case CVTYPE_VOID:
 		    if (ref_inc)
 			sprintf(abuf + strlen(abuf), "_CNV_PTR_%sVOID, _L_REF(%i, %i)",
-				is_const ? "C" : "", arg_num + 1 + ref_inc, ref_mult);
+				get_pref(), arg_num + 1 + ref_inc, ref_mult);
 		    else
 			sprintf(abuf + strlen(abuf), "_CNV_PTR_%sPVOID, _L_NONE",
-				is_const ? "C" : "");
+				get_pref());
 		    break;
 		case CVTYPE_CHAR:
 		    if (is_const)
@@ -134,12 +145,12 @@ static void do_start_arg(int anum)
 			strcat(abuf, "_CNV_PTR_CHAR_ARR, _L_UNIMP");
 		    break;
 		case CVTYPE_ARR:
-		    sprintf(abuf + strlen(abuf), "_CNV_PTR_ARR, _L_IMM(%i, %i)",
-			    arg_num + 1, arr_sz);
+		    sprintf(abuf + strlen(abuf), "_CNV_PTR_%sARR, _L_IMM(%i, %i)",
+			    get_pref(), arg_num + 1, arr_sz);
 		    break;
 		case CVTYPE_OTHER:
 		    sprintf(abuf + strlen(abuf), "_CNV_%sPTR, _L_SZ(%i)",
-			    is_const ? "C" : "", arg_num + 1);
+			    get_pref(), arg_num + 1);
 		    break;
 		}
 		break;
@@ -179,12 +190,12 @@ static void do_start_arg(int anum)
 				    "_L_IMM(%i, %i)", arg_num + 1, arr_sz);
 		break;
 	    case CVTYPE_ARR:
-		sprintf(abuf + strlen(abuf), "_CNV_ARR, _L_IMM(%i, %i)",
-			    arg_num + 1, arr_sz);
+		sprintf(abuf + strlen(abuf), "_CNV_%sARR, _L_IMM(%i, %i)",
+			    get_pref(), arg_num + 1, arr_sz);
 		break;
 	    case CVTYPE_OTHER:
 		sprintf(abuf + strlen(abuf), "_CNV_%sPTR, _L_SZ(%i)",
-			    is_const ? "C" : "", arg_num + 1);
+			    get_pref(), arg_num + 1);
 		break;
 	    }
 	}
@@ -306,7 +317,7 @@ static const char *al_u_type(void) { return (align == 2 ? "UWORD" : "UDWORD"); }
 %token QWORD UQWORD
 %token STRUCT UNION
 %token LBR RBR
-%token CONST
+%token CONST OUT
 %token NORETURN V_FW V_BW
 
 %define api.value.type union
@@ -603,6 +614,7 @@ rdecls:		rtype rq_fa	{ abuf[0] = 0; }
 
 adecls:		  atype quals
 		| CONST atype quals	{ is_const = 1; }
+		| OUT atype quals	{ is_out = 1; }
 ;
 
 argsep:		COMMA		{ fin_arg(0); strcat(abuf, ", "); beg_arg(); }

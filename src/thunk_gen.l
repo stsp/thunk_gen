@@ -69,6 +69,7 @@
 "struct"	{ return STRUCT; }
 "union"		{ return UNION; }
 "const"		{ return CONST; }
+"__out"		{ return OUT; }
 "NORETURN"	{ return NORETURN; }
 "_V_FW"		{ return V_FW; }
 "_V_BW"		{ return V_BW; }
