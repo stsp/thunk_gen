@@ -1,6 +1,7 @@
 TG = $(shell pkg-config --variable=binary thunk_gen)
 TGS = $(shell pkg-config --variable=tgscript thunk_gen)
 PDS ?= $(shell pkg-config --variable=pdscript thunk_gen)
+MKADS = $(shell pkg-config --variable=mkadscript thunk_gen)
 TGM4 = $(shell pkg-config --variable=m4script thunk_gen)
 
 GEN_TMP = thunk_calls.tmp thunk_asms.tmp plt.inc plt_asmc.h plt_asmp.h
@@ -28,3 +29,6 @@ thunk_asms.h: thunk_asms.tmp
 		|| ($(RM) $@__ ; false)
 	cat $@_ $@__ >$@
 	rm -f $@_ $@__
+
+glob_asmdefs.h: $(GLOB_ASM)
+	$(MKADS) $< >$@
