@@ -30,5 +30,7 @@ thunk_asms.h: thunk_asms.tmp
 	cat $@_ $@__ >$@
 	rm -f $@_ $@__
 
+ifneq ($(GLOB_ASM),)
 glob_asmdefs.h: $(GLOB_ASM)
 	$(MKADS) $< >$@
+endif
