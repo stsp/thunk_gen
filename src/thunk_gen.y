@@ -267,6 +267,7 @@ static void fin_arg(int last)
 		yyerror("parse error, void argument?");
 	    if (arg_size == -1 && !last)
 		yyerror("unknown argument size");
+	    arg_num++;
 	    return;
 	}
 	real_arg_size = al_arg_size;
