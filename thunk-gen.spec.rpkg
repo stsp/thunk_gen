@@ -16,7 +16,6 @@ Source0: {{{ git_dir_archive }}}
 
 BuildRequires: bash
 BuildRequires: meson
-BuildRequires: ninja-build
 BuildRequires: bison
 BuildRequires: flex
 BuildRequires: gcc

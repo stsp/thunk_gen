@@ -6,7 +6,6 @@ Standards-Version: 3.9.7
 Build-Depends:
     bash,
     meson,
-    ninja-build,
     bison,
     flex,
     gcc,
