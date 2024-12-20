@@ -30,7 +30,8 @@ pkg.generate(
               'makeinc=${prefix}' / get_option('datadir') /
                meson.project_name() / 'thunk_gen.mk'
              ],
-  uninstalled_variables: UV
+  uninstalled_variables: UV,
+  install_dir: get_option('datadir') / 'pkgconfig'
 )
 install_data(['scripts/thunks.m4', 'scripts/thunk_gen.mk'])
 install_data(['scripts/tg_m4', 'scripts/parse_decls.sh',
