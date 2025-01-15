@@ -1,4 +1,4 @@
-project('thunk_gen', 'c', version: '1.2')
+project('thunk_gen', 'c', version: '1.4')
 
 subdir('src')
 pkg = import('pkgconfig')
