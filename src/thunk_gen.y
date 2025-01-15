@@ -186,8 +186,9 @@ static void do_start_arg(int anum)
 			sprintf(abuf + strlen(abuf), "_CNV_CCHAR_ARR, "
 				    "_L_IMM(%i, %i)", arg_num + 1, arr_sz);
 		} else
-		    sprintf(abuf + strlen(abuf), "_CNV_CHAR_ARR, "
-				    "_L_IMM(%i, %i)", arg_num + 1, arr_sz);
+		    sprintf(abuf + strlen(abuf), "_CNV_CHAR_%sARR, "
+				    "_L_IMM(%i, %i)",
+				    get_pref(), arg_num + 1, arr_sz);
 		break;
 	    case CVTYPE_ARR:
 		sprintf(abuf + strlen(abuf), "_CNV_%sARR, _L_IMM(%i, %i)",
