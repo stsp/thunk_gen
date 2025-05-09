@@ -58,7 +58,12 @@
 "unsigned long long"	{ return UQWORD; }
 "size_t"	{ return UDWORD; }
 "ssize_t"	{ return DWORD; }
+"int16_t"	{ return WORD; }
+"uint16_t"	{ return UWORD; }
+"int32_t"	{ return DWORD; }
 "uint32_t"	{ return UDWORD; }
+"LONG"		{ return DWORD; }
+"LONG32"	{ return DWORD; }
 "ULONG"		{ return UDWORD; }
 "ULONG32"	{ return UDWORD; }
 "DWORD"		{ return DWORD; }
