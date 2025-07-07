@@ -3,16 +3,21 @@
 # foru - upcounting loop.
 m4_define(foru, [m4_cond(m4_eval($3>=$2), 1, [m4_for([$1],[$2],[$3],,[$4])])])
 
+# generate stack layout
 m4_define(G_S0, [foru(i, 1, $1, [aat[]i a[]i; \
 m4_if($1, i,, [        ])])])
 m4_define(G_S1, [foru(i, 1, $1, [aat[]m4_eval($1-i+1) a[]m4_eval($1-i+1); \
 m4_if($1, i,, [        ])])])
+
+# generate initializers
 m4_define(G_I0, [foru(i, 1, $1, [_a[]i[]m4_if($1, i,, [, ])])])
 m4_define(G_I1, [foru(i, 1, $1, [_a[]m4_eval($1-i+1)[]m4_if($1, i,, [, ])])])
-m4_define(G_M, [m4_cond($3, 1, _P_)$1[]m4_cond($2, 1, _v)])
+
+# generate args
 m4_define(G_A, [m4_if($1, 0, [NULL, 0], [(UBYTE *)&_args, sizeof(_args)])])
+
 m4_define(THUNK,
-[[#]define _THUNK[]G_M($1,$2,$3)([n, r], m4_cond($2, 0, [s, ])f, foru(i, 1, $1,
+[[#]define _THUNK$4([n, r], m4_cond($2, 0, [s, ])f, foru(i, 1, $1,
   [t[]i, q[]i, at[]i, aat[]i, c[]i, l[]i, ])z) \
 r f(m4_if($1, 0, void, [foru(i, 1, $1,
 [t[]i a[]i q[]i[]m4_if($1, i,, [, ])])])) \

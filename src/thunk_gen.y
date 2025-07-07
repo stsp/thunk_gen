@@ -367,11 +367,17 @@ line:		lnum rdecls fname lb args rb attrs SEMIC
 				    $1, $3);
 			    }
 			    break;
-			  case 1:
+			  case 1: {
+			    int is_v = is_rvoid && !is_rptr;
 			    /* for m4 */
-			    printf("THUNK(%i, %i, %i)\n",
-			        arg_num, is_rvoid && !is_rptr, is_pas);
+			    printf("THUNK(%i, %i, %i, %s%i%s)\n",
+			        arg_num, is_v, is_pas,
+			        is_pas ? "_P_" : "",
+			        arg_num,
+			        is_v ? "_v" : ""
+			        );
 			    break;
+			  }
 			  case 2:
 			    /* for cpp */
 			    if (!is_rvoid || is_rptr)
