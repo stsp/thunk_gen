@@ -17,7 +17,7 @@ m4_define(G_I1, [foru(i, 1, $1, [_a[]m4_eval($1-i+1)[]m4_if($1, i,, [, ])])])
 m4_define(G_A, [m4_if($1, 0, [NULL, 0], [(UBYTE *)&_args, sizeof(_args)])])
 
 m4_define(THUNK,
-[[#]define _THUNK$4([n, r], m4_cond($2, 0, [s, ])f, foru(i, 1, $1,
+[[#]define _THUNK$1$4([n, r], m4_cond($2, 0, [s, ])f, foru(i, 1, $1,
   [t[]i, q[]i, at[]i, aat[]i, c[]i, l[]i, ])z) \
 r f(m4_if($1, 0, void, [foru(i, 1, $1,
 [t[]i a[]i q[]i[]m4_if($1, i,, [, ])])])) \
