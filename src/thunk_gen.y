@@ -12,6 +12,8 @@
 
 #define YYDEBUG 1
 
+static int tg_abi = 3;
+
 static void yyerror(const char* s);
 int yylex(void);
 
@@ -369,11 +371,16 @@ line:		lnum rdecls fname lb args rb attrs SEMIC
 			    break;
 			  case 1: {
 			    int is_v = is_rvoid && !is_rptr;
+			    if (!is_v && is_noret)
+			      yyerror("non-void noret?");
+			    else if (is_noret)
+			      is_v++;
 			    /* for m4 */
-			    printf("THUNK(%i, %i, %i, %s%s)\n",
+			    printf("THUNK(%i, %i, %i, %s%s%s)\n",
 			        arg_num, is_v, is_pas,
 			        is_pas ? "_P" : "",
-			        is_v ? "_v" : ""
+			        is_v ? "_v" : "",
+			        is_noret ? "_nr" : ""
 			        );
 			    break;
 			  }
@@ -391,10 +398,13 @@ line:		lnum rdecls fname lb args rb attrs SEMIC
 			                  "__RET_PTR") : "__RET",
 			          $3);
 			    else
-			      printf("_THUNK%i%s_v(%i, void, %s",
+			      printf("_THUNK%i%s_v%s(%i, %svoid, %s",
 			          arg_num,
 			          is_pas ? "_P" : "",
-			          $1, $3);
+			          is_noret ? "_nr" : "",
+			          $1,
+			          is_noret ? "__NORET " : "",
+			          $3);
 			    if (arg_num)
 			      printf(", %s", abuf);
 			    printf(", %s)\n", get_flags());
@@ -662,6 +672,27 @@ int main(int argc, char *argv[])
     if (optind < argc)
 	thunk_type = atoi(argv[optind++]);
 
+    if (thunk_type == 1)
+	printf(
+		"/* generated with thunk-gen v%s */"
+		"nl()"
+		"sp_num(define TG_ABI %i)"
+		"sp_num(ifndef __CALL_v)"
+		"sp_num(define __CALL_v __CALL)"
+		"sp_num(endif)"
+		"sp_num(ifndef __CALL_v_nr)"
+		"sp_num(define __CALL_v_nr __CALL)"
+		"sp_num(endif)"
+		"sp_num(ifndef __CALL_P)"
+		"sp_num(define __CALL_P __CALL)"
+		"sp_num(endif)"
+		"sp_num(ifndef __CALL_P_v)"
+		"sp_num(define __CALL_P_v __CALL)"
+		"sp_num(endif)"
+		"sp_num(ifndef __NORET)"
+		"sp_num(define __NORET)"
+		"sp_num(endif)"
+		"\n", VERSION, tg_abi);
     yyparse();
     return 0;
 }
