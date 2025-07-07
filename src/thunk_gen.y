@@ -386,7 +386,7 @@ line:		lnum rdecls fname lb args rb attrs SEMIC
 			                  "__RET_PTR") : "__RET",
 			          $3);
 			    else
-			      printf("_THUNK%s%i_v(%i, %s",
+			      printf("_THUNK%s%i_v(%i, void, %s",
 			          is_pas ? "_P_" : "",
 			          arg_num,
 			          $1, $3);

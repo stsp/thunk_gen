@@ -12,9 +12,9 @@ m4_define(G_I1, [foru(i, 1, $1, [_a[]m4_eval($1-i+1)[]m4_if($1, i,, [, ])])])
 m4_define(G_M, [m4_cond($3, 1, _P_)$1[]m4_cond($2, 1, _v)])
 m4_define(G_A, [m4_if($1, 0, [NULL, 0], [(UBYTE *)&_args, sizeof(_args)])])
 m4_define(THUNK,
-[[#]define _THUNK[]G_M($1,$2,$3)(n, m4_cond($2, 0, [r, s, ])f, foru(i, 1, $1,
+[[#]define _THUNK[]G_M($1,$2,$3)([n, r], m4_cond($2, 0, [s, ])f, foru(i, 1, $1,
   [t[]i, q[]i, at[]i, aat[]i, c[]i, l[]i, ])z) \
-m4_if($2, 1, void, r) f(m4_if($1, 0, void, [foru(i, 1, $1,
+r f(m4_if($1, 0, void, [foru(i, 1, $1,
 [t[]i a[]i q[]i[]m4_if($1, i,, [, ])])])) \
 { \
     const uint32_t _flags = z; \
