@@ -12,7 +12,8 @@ pgen = generator(bison,
 pfiles = pgen.process('thunk_gen.y')
 
 executable('thunk_gen', lfiles, pfiles,
-  c_args: ['-Wno-unused-function'],
+  c_args: ['-Wno-unused-function',
+           '-DVERSION="@0@"'.format(meson.project_version())],
   install: true,
   install_dir: get_option('prefix') / get_option('libexecdir') /
     meson.project_name())
