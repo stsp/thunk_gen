@@ -672,6 +672,11 @@ int main(int argc, char *argv[])
     if (optind < argc)
 	thunk_type = atoi(argv[optind++]);
 
+    if (!align || !ptr_size) {
+	fprintf(stderr, "Set alignment and ptr size\n");
+	return EXIT_FAILURE;
+    }
+
     if (thunk_type == 1)
 	printf(
 		"/* generated with thunk-gen v%s */"
