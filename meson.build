@@ -17,17 +17,20 @@ endif
 pkg.generate(
   name: meson.project_name(),
   description: 'thunk generator',
-  variables: ['binary=${prefix}' / get_option('libexecdir') /
+  # we need sdkdir as buildroot prefixes it with sysroot path
+  variables: [
+              'sdkdir=${prefix}',
+              'binary=${sdkdir}' / get_option('libexecdir') /
                meson.project_name() / meson.project_name(),
-              'tgscript=${prefix}' / get_option('libexecdir') /
+              'tgscript=${sdkdir}' / get_option('libexecdir') /
                meson.project_name() / 'tg_m4',
-              'pdscript=${prefix}' / get_option('libexecdir') /
+              'pdscript=${sdkdir}' / get_option('libexecdir') /
                meson.project_name() / 'parse_decls.sh',
-              'mkadscript=${prefix}' / get_option('libexecdir') /
+              'mkadscript=${sdkdir}' / get_option('libexecdir') /
                meson.project_name() / 'mkasmdefs.sh',
-              'm4script=${prefix}' / get_option('datadir') /
+              'm4script=${sdkdir}' / get_option('datadir') /
                meson.project_name() / 'thunks.m4',
-              'makeinc=${prefix}' / get_option('datadir') /
+              'makeinc=${sdkdir}' / get_option('datadir') /
                meson.project_name() / 'thunk_gen.mk'
              ],
   uninstalled_variables: UV,
