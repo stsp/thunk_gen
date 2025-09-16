@@ -20,12 +20,12 @@ plt_asmc.h plt_asmp.h: thunk_asms.tmp
 	$(pars)
 
 thunk_calls.h: thunk_calls.tmp
-	$(TG) $(TFLAGS) <$< >$@
+	($(TG) $(TFLAGS) <$< >$@) || ($(RM) $@ ; false)
 
 thunk_asms.h: thunk_asms.tmp
-	$(TG) $(TFLAGS) 1 <$< | $(TGS) $(TGM4) >$@_ \
+	(set -o pipefail; $(TG) $(TFLAGS) 1 <$< | $(TGS) $(TGM4) >$@_) \
 		|| ($(RM) $@_ ; false)
-	$(TG) $(TFLAGS) 2 <$< >$@__ \
+	($(TG) $(TFLAGS) 2 <$< >$@__) \
 		|| ($(RM) $@__ ; false)
 	cat $@_ $@__ >$@
 	rm -f $@_ $@__
