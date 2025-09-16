@@ -22,6 +22,7 @@ plt_asmc.h plt_asmp.h: thunk_asms.tmp
 thunk_calls.h: thunk_calls.tmp
 	($(TG) $(TFLAGS) <$< >$@) || ($(RM) $@ ; false)
 
+SHELL := /usr/bin/env bash
 thunk_asms.h: thunk_asms.tmp
 	(set -o pipefail; $(TG) $(TFLAGS) 1 <$< | $(TGS) $(TGM4) >$@_) \
 		|| ($(RM) $@_ ; false)
