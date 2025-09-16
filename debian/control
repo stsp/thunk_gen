@@ -16,6 +16,7 @@ Homepage: https://github.com/stsp/thunk_gen
 Package: thunk-gen
 Architecture: any
 Depends:
+ bash,
  autoconf,
  pkg-config,
  ${misc:Depends},
