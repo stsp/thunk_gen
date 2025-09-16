@@ -1,8 +1,8 @@
-TG = $(shell pkg-config --variable=binary thunk_gen)
-TGS = $(shell pkg-config --variable=tgscript thunk_gen)
+TG ?= $(shell pkg-config --variable=binary thunk_gen)
+TGS ?= $(shell pkg-config --variable=tgscript thunk_gen)
 PDS ?= $(shell pkg-config --variable=pdscript thunk_gen)
-MKADS = $(shell pkg-config --variable=mkadscript thunk_gen)
-TGM4 = $(shell pkg-config --variable=m4script thunk_gen)
+MKADS ?= $(shell pkg-config --variable=mkadscript thunk_gen)
+TGM4 ?= $(shell pkg-config --variable=m4script thunk_gen)
 
 GEN_TMP = thunk_calls.tmp thunk_asms.tmp plt.inc plt_asmc.h plt_asmp.h
 _pos = $(if $(findstring $1,$2),$(call _pos,$1,\
