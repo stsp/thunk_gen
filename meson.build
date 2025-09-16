@@ -1,4 +1,4 @@
-project('thunk_gen', 'c', version: '1.7')
+project('thunk_gen', 'c', version: '1.7', meson_version: '>= 1.3.0')
 
 subdir('src')
 pkg = import('pkgconfig')
