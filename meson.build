@@ -41,3 +41,7 @@ install_data(['scripts/tg_m4', 'scripts/parse_decls.sh',
               'scripts/mkasmdefs.sh'],
   install_dir: get_option('prefix') / get_option('libexecdir') /
     meson.project_name())
+
+dep = declare_dependency(variables: UV)
+meson.override_dependency('thunk_gen', dep)
+meson.override_find_program('thunk_gen', exe)
