@@ -1,10 +1,14 @@
 #!/usr/bin/env bash
 
+set -e
 set -o pipefail
 
-M4S=`pkg-config --variable=m4script thunk_gen`
-if [ ! -f "$M4S" ]; then
+if [ -z "$1" ]; then
+    echo "Usage: $0 <data_dir>"
+    exit 1
+fi
+if [ ! -f "$1" ]; then
     echo "$1 missing"
     exit 1
 fi
-sort | uniq | autom4te -l m4sugar "$M4S" -
+sort | uniq | autom4te -l m4sugar "$1" -
