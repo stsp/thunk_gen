@@ -36,7 +36,9 @@ pkg.generate(
   uninstalled_variables: UV,
   install_dir: get_option('datadir') / 'pkgconfig'
 )
-install_data(['scripts/thunks.m4', 'scripts/thunk_gen.mk'])
+install_data(['scripts/thunks.m4', 'scripts/thunk_gen.mk'],
+  install_dir: get_option('prefix') / get_option('datadir') /
+    meson.project_name())
 install_data(['scripts/tg_m4', 'scripts/parse_decls.sh',
               'scripts/mkasmdefs.sh'],
   install_dir: get_option('prefix') / get_option('libexecdir') /
