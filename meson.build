@@ -45,5 +45,7 @@ install_data(['scripts/tg_m4', 'scripts/parse_decls.sh',
     meson.project_name())
 
 dep = declare_dependency(variables: UV)
-meson.override_dependency('thunk_gen', dep)
-meson.override_find_program('thunk_gen', exe)
+if meson.version().version_compare('>=0.54')
+  meson.override_dependency('thunk_gen', dep)
+  meson.override_find_program('thunk_gen', exe)
+endif
