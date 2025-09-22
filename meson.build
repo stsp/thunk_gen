@@ -34,15 +34,18 @@ pkg.generate(
                meson.project_name() / 'thunk_gen.mk'
              ],
   uninstalled_variables: UV,
-  install_dir: get_option('datadir') / 'pkgconfig'
+  install_dir: get_option('datadir') / 'pkgconfig',
 )
-install_data(['scripts/thunks.m4', 'scripts/thunk_gen.mk'],
-  install_dir: get_option('prefix') / get_option('datadir') /
-    meson.project_name())
-install_data(['scripts/tg_m4', 'scripts/parse_decls.sh',
+
+if not meson.is_subproject()
+  install_data(['scripts/thunks.m4', 'scripts/thunk_gen.mk'],
+    install_dir: get_option('prefix') / get_option('datadir') /
+      meson.project_name())
+  install_data(['scripts/tg_m4', 'scripts/parse_decls.sh',
               'scripts/mkasmdefs.sh'],
-  install_dir: get_option('prefix') / get_option('libexecdir') /
-    meson.project_name())
+    install_dir: get_option('prefix') / get_option('libexecdir') /
+      meson.project_name())
+endif
 
 dep = declare_dependency(variables: UV)
 if meson.version().version_compare('>=0.54')

@@ -14,6 +14,6 @@ pfiles = pgen.process('thunk_gen.y')
 exe = executable('thunk_gen', lfiles, pfiles,
   c_args: ['-Wno-unused-function',
            '-DVERSION="@0@"'.format(meson.project_version())],
-  install: true,
+  install: not meson.is_subproject(),
   install_dir: get_option('prefix') / get_option('libexecdir') /
     meson.project_name())
