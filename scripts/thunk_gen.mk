@@ -24,7 +24,7 @@ thunk_calls.h: thunk_calls.tmp
 
 OLDSHELL := $(SHELL)
 SHELL := /usr/bin/env bash -o pipefail
-thunk_asms.h: thunk_asms.tmp
+thunk_asms.h: thunk_asms.tmp $(TGM4)
 	($(TG) $(TFLAGS) 1 <$< | $(TGS) $(TGM4) >$@_) \
 		|| ($(RM) $@_ ; false)
 	($(TG) $(TFLAGS) 2 <$< >$@__) \
