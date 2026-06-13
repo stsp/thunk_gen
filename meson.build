@@ -9,6 +9,7 @@ UV = ['binary=' + meson.project_build_root() / 'src' /
       'pdscript=' + meson.project_source_root() / 'scripts/parse_decls.sh',
       'mkadscript=' + meson.project_source_root() / 'scripts/mkasmdefs.sh',
       'm4script=' + meson.project_source_root() / 'scripts/thunks.m4',
+      'm4_32script=' + meson.project_source_root() / 'scripts/thunks32.m4',
       'makeinc=' + meson.project_source_root() / 'scripts/thunk_gen.mk'
      ]
 else
@@ -21,24 +22,26 @@ pkg.generate(
   variables: [
               'sdkdir=${prefix}',
               'binary=${sdkdir}' / get_option('libexecdir') /
-               meson.project_name() / meson.project_name(),
+                 meson.project_name() / meson.project_name(),
               'tgscript=${sdkdir}' / get_option('libexecdir') /
-               meson.project_name() / 'tg_m4',
+                 meson.project_name() / 'tg_m4',
               'pdscript=${sdkdir}' / get_option('libexecdir') /
-               meson.project_name() / 'parse_decls.sh',
+                 meson.project_name() / 'parse_decls.sh',
               'mkadscript=${sdkdir}' / get_option('libexecdir') /
-               meson.project_name() / 'mkasmdefs.sh',
+                 meson.project_name() / 'mkasmdefs.sh',
               'm4script=${sdkdir}' / get_option('datadir') /
-               meson.project_name() / 'thunks.m4',
+                 meson.project_name() / 'thunks.m4',
+              'm4_32script=${sdkdir}' / get_option('datadir') /
+                 meson.project_name() / 'thunks32.m4',
               'makeinc=${sdkdir}' / get_option('datadir') /
-               meson.project_name() / 'thunk_gen.mk'
+                 meson.project_name() / 'thunk_gen.mk'
              ],
   uninstalled_variables: UV,
   install_dir: get_option('datadir') / 'pkgconfig',
 )
 
 if not meson.is_subproject()
-  install_data(['scripts/thunks.m4', 'scripts/thunk_gen.mk'],
+  install_data(['scripts/thunks.m4', 'scripts/thunks32.m4', 'scripts/thunk_gen.mk'],
     install_dir: get_option('prefix') / get_option('datadir') /
       meson.project_name())
   install_data(['scripts/tg_m4', 'scripts/parse_decls.sh',

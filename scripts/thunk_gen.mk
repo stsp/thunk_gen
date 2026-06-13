@@ -3,6 +3,7 @@ TGS ?= $(shell pkg-config --variable=tgscript thunk_gen)
 PDS ?= $(shell pkg-config --variable=pdscript thunk_gen)
 MKADS ?= $(shell pkg-config --variable=mkadscript thunk_gen)
 TGM4 ?= $(shell pkg-config --variable=m4script thunk_gen)
+TGM4_32 ?= $(shell pkg-config --variable=m4_32script thunk_gen)
 
 GEN_TMP = thunk_calls.tmp thunk_asms.tmp plt.inc plt_asmc.h plt_asmp.h
 _pos = $(if $(findstring $1,$2),$(call _pos,$1,\
@@ -26,6 +27,20 @@ OLDSHELL := $(SHELL)
 SHELL := /usr/bin/env bash -o pipefail
 thunk_asms.h: thunk_asms.tmp $(TGM4)
 	($(TG) $(TFLAGS) 1 <$< | $(TGS) $(TGM4) >$@_) \
+		|| ($(RM) $@_ ; false)
+	($(TG) $(TFLAGS) 2 <$< >$@__) \
+		|| ($(RM) $@__ ; false)
+	cat $@_ $@__ >$@
+	rm -f $@_ $@__
+thunk_p32.h: thunk_asms.tmp $(TGM4_32)
+	($(TG) $(TFLAGS) 1 <$< | $(TGS) $(TGM4_32) >$@_) \
+		|| ($(RM) $@_ ; false)
+	($(TG) $(TFLAGS) 2 <$< >$@__) \
+		|| ($(RM) $@__ ; false)
+	cat $@_ $@__ >$@
+	rm -f $@_ $@__
+thunk_c32.h: thunk_calls.tmp $(TGM4_32)
+	($(TG) $(TFLAGS) 1 <$< | $(TGS) $(TGM4_32) >$@_) \
 		|| ($(RM) $@_ ; false)
 	($(TG) $(TFLAGS) 2 <$< >$@__) \
 		|| ($(RM) $@__ ; false)
