@@ -3,7 +3,7 @@
 set -o pipefail
 
 gen_calls_tmp() {
-	grep ASMCFUNC "$1" | grep -v "#define" | nl -v 0 | sed -E 's/^ *//'
+	grep ASMCFUNC "$1" | grep -v "#define"
 }
 
 gen_plt_inc() {
@@ -11,7 +11,7 @@ gen_plt_inc() {
 }
 
 gen_asms_tmp() {
-	grep 'ASMFUNC\|ASMPASCAL' "$1" | grep -v "//" | grep -v "#define" | nl -v 0 | sed -E 's/^ *//'
+	grep 'ASMFUNC\|ASMPASCAL' "$1" | grep -v "//" | grep -v "#define"
 }
 
 gen_plt_asmc() {
@@ -22,6 +22,10 @@ gen_plt_asmc() {
 gen_plt_asmp() {
 	grep ASMPASCAL "$1" | tr '[:lower:]' '[:upper:]' | \
 		sed -E 's/([0-9]+).+ ([^ \(]+) *\(.+/ASMPSYM\(\3, \1\)/'
+}
+
+gen_h1() {
+	sed -E -e 's/^([^\(]+ )([^ \(]+)/\1_FUNC\(\2\)/' "$1"
 }
 
 case "$1" in
@@ -39,5 +43,8 @@ case "$1" in
 	;;
 5)
 	gen_plt_asmp "$2"
+	;;
+6|7)
+	gen_h1 "$2"
 	;;
 esac
