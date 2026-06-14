@@ -1,3 +1,9 @@
+thunk-gen (1.9-1) resolute; urgency=low
+
+  * 1.9
+
+ -- Stas Sergeev <stsp2@yandex.ru>  Sun, 14 Jun 2026 10:40:00 +0300
+
 thunk-gen (1.8-1) noble; urgency=low
 
   * 1.8
