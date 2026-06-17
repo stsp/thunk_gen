@@ -4,7 +4,6 @@ Priority: optional
 Maintainer: Stas Sergeev <stsp2@yandex.ru>
 Standards-Version: 3.9.7
 Build-Depends:
-    bash,
     meson,
     bison,
     flex,
@@ -16,7 +15,6 @@ Homepage: https://github.com/stsp/thunk_gen
 Package: thunk-gen
 Architecture: any
 Depends:
- bash,
  autoconf,
  pkg-config,
  ${misc:Depends},
