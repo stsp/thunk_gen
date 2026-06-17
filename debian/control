@@ -16,7 +16,7 @@ Package: thunk-gen
 Architecture: any
 Depends:
  autoconf,
- pkg-config,
+ pkgconf,
  ${misc:Depends},
  ${shlibs:Depends}
 Description: 64-bit thunk generator for 16- and 32-bit code
