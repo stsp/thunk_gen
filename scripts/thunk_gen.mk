@@ -17,9 +17,9 @@ $(filter thunk_c.h thunk_p.h,$(GEN_TMP)): $(PDHDR)
 	$(pars)
 
 thunk_calls.tmp: thunk_c.h
-	nl -v 0 <$< | sed -E 's/^ *//' >$@
+	nl -v0 <$< | sed -E 's/^ *//' >$@
 thunk_asms.tmp: thunk_p.h
-	nl -v 0 <$< | sed -E 's/^ *//' >$@
+	nl -v0 <$< | sed -E 's/^ *//' >$@
 endif
 plt.inc: thunk_calls.tmp
 	$(pars)
