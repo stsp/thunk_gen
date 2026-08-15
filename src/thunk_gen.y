@@ -437,7 +437,6 @@ rquals:		  FAR ASTER	{ is_rfar = 1; is_rptr = 1; }
 
 quals:		  FAR quals	{ is_far = 1; }
 		| ASTER quals	{ is_ptr = 1; }
-		| arr
 		|
 ;
 
