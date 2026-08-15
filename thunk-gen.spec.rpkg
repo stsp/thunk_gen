@@ -15,10 +15,7 @@ VCS: {{{ git_dir_vcs }}}
 Source0: {{{ git_dir_archive }}}
 
 BuildRequires: meson
-BuildRequires: bison
-BuildRequires: flex
-BuildRequires: gcc
-BuildRequires: binutils
+BuildRequires: python3-ply
 
 Requires: autoconf
 Requires: pkgconf-pkg-config

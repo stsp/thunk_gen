@@ -5,10 +5,7 @@ Maintainer: Stas Sergeev <stsp2@yandex.ru>
 Standards-Version: 3.9.7
 Build-Depends:
     meson,
-    bison,
-    flex,
-    gcc,
-    binutils,
+    python3-ply,
     debhelper (>= 9~)
 Homepage: https://github.com/stsp/thunk_gen
 
