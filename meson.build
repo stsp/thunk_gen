@@ -35,7 +35,7 @@ pkg.generate(
                  meson.project_name() / 'thunk_gen.mk'
              ],
   uninstalled_variables: UV,
-  install_dir: get_option('libdir') / 'pkgconfig',
+  install_dir: get_option('datadir') / 'pkgconfig',
 )
 
 if not meson.is_subproject()
