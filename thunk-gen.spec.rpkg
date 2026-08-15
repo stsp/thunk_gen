@@ -28,9 +28,10 @@ Thunk generator for C and assembler code.
 
 %build
 ./configure --prefix %{_prefix} build
-meson compile --verbose -C build %{?_smp_mflags}
 
 %check
+
+%define debug_package %{nil}
 
 %install
 meson install -C build --destdir %{buildroot}
