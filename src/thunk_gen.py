@@ -88,6 +88,14 @@ ASTER: "*"
 LBR: "["
 RBR: "]"
 
+UQWORD.4: "unsigned long long" | "UQWORD"
+LDOUBLE.4: "long double"
+UWORD.3: "unsigned short" | "UWORD" | "UCOUNT" | "uint16_t"
+UBYTE.3: "unsigned char" | "UBYTE"
+UDWORD.3: "unsigned long" | "unsigned int" | "unsigned" | "UDWORD" | "uint32_t" | "ULONG32" | "ULONG" | "size_t"
+QWORD.3: "long long" | "QWORD"
+DWORD.2: "DWORD" | "int32_t" | "LONG32" | "LONG" | "int" | "long" | "ssize_t"
+
 ASMCFUNC.2: "ASMCFUNC"
 ASMPASCAL.2: "ASMPASCAL"
 ASMFUNC.2: "ASMFUNC"
@@ -96,17 +104,10 @@ SEGM.2: "SEGM"
 FAR.2: "FAR" | "far"
 VOID.2: "VOID" | "void"
 WORD.2: "WORD" | "COUNT" | "BOOL" | "short" | "int16_t"
-UWORD.2: "UWORD" | "UCOUNT" | /unsigned\s+short/ | "uint16_t"
 BYTE.2: "BYTE"
-UBYTE.2: "UBYTE" | /unsigned\s+char/
 CHAR.2: "char"
-DWORD.2: "DWORD" | "int32_t" | "LONG32" | "LONG" | "int" | "long" | "ssize_t"
-UDWORD.2: "UDWORD" | "uint32_t" | "ULONG32" | "ULONG" | /unsigned\s+long/ | /unsigned\s+int/ | "unsigned" | "size_t"
-QWORD.2: "QWORD" | /long\s+long/
-UQWORD.2: "UQWORD" | /unsigned\s+long\s+long/
 FLOAT.2: "float"
 DOUBLE.2: "double"
-LDOUBLE.2: "long double" | /long\s+double/
 STRUCT.2: "struct"
 UNION.2: "union"
 CONST.2: "const"
@@ -738,7 +739,7 @@ def main():
         sys.exit(1)
 
     input_data = sys.stdin.read()
-    lark_parser = Lark(grammar, start='start', lexer='basic')
+    lark_parser = Lark(grammar, start='start')
     tree = lark_parser.parse(input_data)
 
     tg = ThunkGenerator(align=args.a, ptr_size=args.p, thunk_type=args.thunk_type)
