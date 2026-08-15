@@ -1,10 +1,9 @@
-project('thunk_gen', 'c', version: '1.10')
+project('thunk_gen', version: '1.10')
 
 subdir('src')
 pkg = import('pkgconfig')
 if meson.version().version_compare('>=0.56')
-UV = ['binary=' + meson.project_build_root() / 'src' /
-       meson.project_name(),
+UV = ['binary=' + meson.project_source_root() / 'src' / 'thunk_gen.py',
       'tgscript=' + meson.project_source_root() / 'scripts/tg_m4',
       'pdscript=' + meson.project_source_root() / 'scripts/parse_decls.sh',
       'mkadscript=' + meson.project_source_root() / 'scripts/mkasmdefs.sh',
