@@ -10,7 +10,7 @@ Build-Depends:
 Homepage: https://github.com/stsp/thunk_gen
 
 Package: thunk-gen
-Architecture: any
+Architecture: all
 Depends:
  autoconf,
  pkgconf,

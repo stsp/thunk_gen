@@ -6,6 +6,7 @@ Name: thunk-gen
 Version: {{{ git_dir_version }}}
 Release: 1%{?dist}
 Summary: thunk generator
+BuildArch: noarch
 
 Group: Development/Tools
 
