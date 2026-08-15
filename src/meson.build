@@ -1,19 +1,11 @@
-flex = find_program('flex', required: true)
-bison = find_program('bison', required: true)
+python = import('python').find_installation()
 
-lgen = generator(flex,
-  output : '@PLAINNAME@.yy.c',
-  arguments : ['-o', '@OUTPUT@', '@INPUT@'])
-lfiles = lgen.process('thunk_gen.l')
+exe = find_program('thunk_gen.py')
 
-pgen = generator(bison,
-  output : ['@BASENAME@.tab.c', '@BASENAME@.tab.h'],
-  arguments : ['@INPUT@', '--defines=@OUTPUT1@', '--output=@OUTPUT0@'])
-pfiles = pgen.process('thunk_gen.y')
-
-exe = executable('thunk_gen', lfiles, pfiles,
-  c_args: ['-Wno-unused-function',
-           '-DVERSION="@0@"'.format(meson.project_version())],
-  install: not meson.is_subproject(),
-  install_dir: get_option('prefix') / get_option('libexecdir') /
-    meson.project_name())
+if not meson.is_subproject()
+  install_data('thunk_gen.py',
+    rename: 'thunk_gen',
+    install_mode: 'rwxr-xr-x',
+    install_dir: get_option('prefix') / get_option('libexecdir') /
+      meson.project_name())
+endif
