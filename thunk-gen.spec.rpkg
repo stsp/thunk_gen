@@ -16,10 +16,10 @@ VCS: {{{ git_dir_vcs }}}
 Source0: {{{ git_dir_archive }}}
 
 BuildRequires: meson
-BuildRequires: python3-ply
 
 Requires: autoconf
 Requires: pkgconf-pkg-config
+Requires: python3-ply
 
 %description
 Thunk generator for C and assembler code.

@@ -4,9 +4,8 @@ Priority: optional
 Maintainer: Stas Sergeev <stsp2@yandex.ru>
 Standards-Version: 3.9.7
 Build-Depends:
-    meson,
-    python3-ply,
-    debhelper (>= 9~)
+ meson,
+ debhelper (>= 9~)
 Homepage: https://github.com/stsp/thunk_gen
 
 Package: thunk-gen
@@ -14,6 +13,7 @@ Architecture: all
 Depends:
  autoconf,
  pkgconf,
+ python3-ply,
  ${misc:Depends},
  ${shlibs:Depends}
 Description: 64-bit thunk generator for 16- and 32-bit code
