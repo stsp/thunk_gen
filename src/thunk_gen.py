@@ -47,7 +47,7 @@ rtype: VOID       -> rtype_void
 
 args: arg (COMMA arg)*
 
-arg: adecls [STRING [arr]]
+arg: adecls [STRING] [arr]
 
 adecls: [CONST] [OUT] atype quals
 
@@ -88,13 +88,12 @@ ASTER: "*"
 LBR: "["
 RBR: "]"
 
-UQWORD.4: "unsigned long long" | "UQWORD"
-LDOUBLE.4: "long double"
-UWORD.3: "unsigned short" | "UWORD" | "UCOUNT" | "uint16_t"
-UBYTE.3: "unsigned char" | "UBYTE"
-UDWORD.3: "unsigned long" | "unsigned int" | "unsigned" | "UDWORD" | "uint32_t" | "ULONG32" | "ULONG" | "size_t"
-QWORD.3: "long long" | "QWORD"
-DWORD.2: "DWORD" | "int32_t" | "LONG32" | "LONG" | "int" | "long" | "ssize_t"
+UQWORD.5: /UQWORD|unsigned\s+long\s+long/
+LDOUBLE.5: /LDOUBLE|long\s+double/
+UWORD.4: /UWORD|UCOUNT|unsigned\s+short|uint16_t/
+UBYTE.4: /UBYTE|unsigned\s+char/
+UDWORD.4: /UDWORD|uint32_t|ULONG32|ULONG|unsigned\s+long|unsigned\s+int|size_t|unsigned(?!\s+(char|short|long|int))/
+QWORD.3: /QWORD|long\s+long/
 
 ASMCFUNC.2: "ASMCFUNC"
 ASMPASCAL.2: "ASMPASCAL"
@@ -106,6 +105,7 @@ VOID.2: "VOID" | "void"
 WORD.2: "WORD" | "COUNT" | "BOOL" | "short" | "int16_t"
 BYTE.2: "BYTE"
 CHAR.2: "char"
+DWORD.2: /DWORD|int32_t|LONG32|LONG|int|long|ssize_t/
 FLOAT.2: "float"
 DOUBLE.2: "double"
 STRUCT.2: "struct"
@@ -491,17 +491,18 @@ class ThunkGenerator:
             self.process_arg(arg_node)
 
     def process_arg(self, node):
-        # arg: adecls [STRING [arr]]
+        # arg: adecls [STRING] [arr]
         children = node.children
         adecls_node = children[0]
         self.process_adecls(adecls_node)
 
-        if len(children) > 1 and children[1] is not None and isinstance(children[1], Token):
+        idx = 1
+        if idx < len(children) and children[idx] is not None and isinstance(children[idx], Token):
             # arg name present
-            pass
+            idx += 1
 
-        if len(children) > 2 and children[2] is not None and isinstance(children[2], Tree):
-            arr_node = children[2]
+        if idx < len(children) and children[idx] is not None and isinstance(children[idx], Tree):
+            arr_node = children[idx]
             if arr_node.data == 'arr_num':
                 self.cvtype = CVTYPE_CHAR_ARR if self.cvtype == CVTYPE_CHAR else CVTYPE_ARR
                 self.is_arr = 1
