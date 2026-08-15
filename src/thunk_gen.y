@@ -440,8 +440,8 @@ quals:		  FAR quals	{ is_far = 1; }
 		|
 ;
 
-arr:		  LBR num RBR	{ cvtype == CVTYPE_CHAR ? cvtype = CVTYPE_CHAR_ARR : CVTYPE_ARR; is_arr = 1; arr_sz = $2; }
-		| LBR RBR	{ cvtype == CVTYPE_CHAR ? cvtype = CVTYPE_CHAR_ARR : CVTYPE_ARR; is_arr = 1; arr_sz = -1; }
+arr:		  LBR num RBR	{ cvtype = (cvtype == CVTYPE_CHAR ? CVTYPE_CHAR_ARR : CVTYPE_ARR); is_arr = 1; arr_sz = $2; }
+		| LBR RBR	{ cvtype = (cvtype == CVTYPE_CHAR ? CVTYPE_CHAR_ARR : CVTYPE_ARR); is_arr = 1; arr_sz = -1; }
 ;
 
 fatr:		  ASMCFUNC
