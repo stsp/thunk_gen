@@ -1,10 +1,8 @@
-project('thunk_gen', 'c', version: '1.10')
+project('thunk_gen', version: '1.10')
 
-subdir('src')
 pkg = import('pkgconfig')
 if meson.version().version_compare('>=0.56')
-UV = ['binary=' + meson.project_build_root() / 'src' /
-       meson.project_name(),
+UV = ['binary=' + meson.project_source_root() / 'src' / 'thunk_gen.py',
       'tgscript=' + meson.project_source_root() / 'scripts/tg_m4',
       'pdscript=' + meson.project_source_root() / 'scripts/parse_decls.sh',
       'mkadscript=' + meson.project_source_root() / 'scripts/mkasmdefs.sh',
@@ -22,7 +20,7 @@ pkg.generate(
   variables: [
               'sdkdir=${prefix}',
               'binary=${sdkdir}' / get_option('libexecdir') /
-                 meson.project_name() / meson.project_name(),
+                 meson.project_name() / 'thunk_gen.py',
               'tgscript=${sdkdir}' / get_option('libexecdir') /
                  meson.project_name() / 'tg_m4',
               'pdscript=${sdkdir}' / get_option('libexecdir') /
@@ -45,12 +43,13 @@ if not meson.is_subproject()
     install_dir: get_option('prefix') / get_option('datadir') /
       meson.project_name())
   install_data(['scripts/tg_m4', 'scripts/parse_decls.sh',
-              'scripts/mkasmdefs.sh'],
+              'scripts/mkasmdefs.sh', 'src/thunk_gen.py'],
     install_dir: get_option('prefix') / get_option('libexecdir') /
       meson.project_name())
 endif
 
 dep = declare_dependency(variables: UV)
+exe = find_program('src/thunk_gen.py')
 if meson.version().version_compare('>=0.54')
   meson.override_dependency('thunk_gen', dep)
   meson.override_find_program('thunk_gen', exe)
