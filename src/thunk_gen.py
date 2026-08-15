@@ -4,11 +4,11 @@ function prototype parser
 Author: Stas Sergeev / ported to PLY
 """
 
-import sys
-import os
 import getopt
-import ply.lex as lex
-import ply.yacc as yacc
+import os
+import sys
+
+from ply import lex, yacc
 
 VERSION = os.environ.get("VERSION", "1.10")
 
@@ -62,9 +62,7 @@ def t_MULTIWORD(t):
         t.type = 'UWORD'
     elif val == "unsigned char":
         t.type = 'UBYTE'
-    elif val == "unsigned int":
-        t.type = 'UDWORD'
-    elif val == "unsigned long":
+    elif val == "unsigned int" or val == "unsigned long":
         t.type = 'UDWORD'
     elif val == "long double":
         t.type = 'LDOUBLE'
@@ -72,11 +70,9 @@ def t_MULTIWORD(t):
 
 def t_COMMENT(t):
     r'/\*.*?\*/'
-    pass
 
 def t_ASMFUNC(t):
     r'ASMFUNC'
-    pass
 
 t_ignore = ' \t\r\n'
 
@@ -396,16 +392,14 @@ def ATYPE3(stype):
 
 def p_input(p):
     '''input : lines'''
-    pass
 
 def p_lines(p):
     '''lines : lines line
              | empty'''
-    pass
 
 def p_line(p):
     '''line : lnum rdecls fname lb args rb attrs SEMIC'''
-    global rlen, abuf
+    global rlen
     num_val = p[1]
     fname_val = p[3]
 
@@ -550,7 +544,6 @@ def p_fatr(p):
 def p_fatrs(p):
     '''fatrs : fatr fatrs
              | fatr'''
-    pass
 
 def p_attr(p):
     '''attr : NORETURN'''
@@ -560,14 +553,12 @@ def p_attr(p):
 def p_attrs(p):
     '''attrs : attr attrs
              | empty'''
-    pass
 
 def p_rq_fa(p):
     '''rq_fa : rquals fatrs
              | rquals
              | fatrs
              | empty'''
-    pass
 
 def p_rtype(p):
     '''rtype : VOID
@@ -764,17 +755,14 @@ def p_argsep(p):
 def p_args(p):
     '''args : args argsep arg
             | arg'''
-    pass
 
 def p_arg(p):
     '''arg : adecls STRING arr
            | adecls STRING
            | adecls'''
-    pass
 
 def p_empty(p):
     '''empty :'''
-    pass
 
 def p_error(p):
     if p:
