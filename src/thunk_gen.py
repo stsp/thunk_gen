@@ -5,12 +5,11 @@ Author: Stas Sergeev / ported to PLY
 """
 
 import getopt
-import os
 import sys
 
 from ply import lex, yacc
 
-VERSION = os.environ.get("VERSION", "1.10")
+VERSION = "1.10"
 
 # Lexer tokens
 tokens = (
