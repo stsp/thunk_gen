@@ -1,4 +1,4 @@
-project('thunk_gen', version: '1.10')
+project('thunk_gen', version : '1.11')
 
 pkg = import('pkgconfig')
 if meson.version().version_compare('>=0.56')

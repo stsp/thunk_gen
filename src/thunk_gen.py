@@ -9,7 +9,7 @@ import sys
 
 from ply import lex, yacc
 
-VERSION = "1.10"
+VERSION = "1.11"
 
 # Lexer tokens
 tokens = (
