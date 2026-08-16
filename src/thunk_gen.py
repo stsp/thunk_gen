@@ -6,8 +6,11 @@ Author: Stas Sergeev / ported to SLY
 
 import getopt
 import sys
+from typing import Any, Callable
 
-from sly import Lexer, Parser
+from sly import Lexer, Parser  # type: ignore[import-not-found]
+
+_: Callable[..., Any] = lambda *args, **kwargs: None  # Dummy definition for static type checkers (mypy)
 
 VERSION = "1.10"
 
