@@ -19,13 +19,13 @@ pkg.generate(
   # we need sdkdir as buildroot prefixes it with sysroot path
   variables: [
               'sdkdir=${prefix}',
-              'binary=${sdkdir}' / get_option('libexecdir') /
+              'binary=${sdkdir}' / get_option('datadir') /
                  meson.project_name() / 'thunk_gen.py',
-              'tgscript=${sdkdir}' / get_option('libexecdir') /
+              'tgscript=${sdkdir}' / get_option('datadir') /
                  meson.project_name() / 'tg_m4',
-              'pdscript=${sdkdir}' / get_option('libexecdir') /
+              'pdscript=${sdkdir}' / get_option('datadir') /
                  meson.project_name() / 'parse_decls.sh',
-              'mkadscript=${sdkdir}' / get_option('libexecdir') /
+              'mkadscript=${sdkdir}' / get_option('datadir') /
                  meson.project_name() / 'mkasmdefs.sh',
               'm4script=${sdkdir}' / get_option('datadir') /
                  meson.project_name() / 'thunks.m4',
@@ -44,7 +44,7 @@ if not meson.is_subproject()
       meson.project_name())
   install_data(['scripts/tg_m4', 'scripts/parse_decls.sh',
               'scripts/mkasmdefs.sh', 'src/thunk_gen.py'],
-    install_dir: get_option('prefix') / get_option('libexecdir') /
+    install_dir: get_option('prefix') / get_option('datadir') /
       meson.project_name())
 endif
 

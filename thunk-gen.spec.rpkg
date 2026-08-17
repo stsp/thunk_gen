@@ -39,7 +39,6 @@ meson install -C build --destdir %{buildroot}
 
 %files
 %defattr(-,root,root)
-%{_libexecdir}/thunk_gen/*
 %{_datadir}/thunk_gen/*
 %{_datadir}/pkgconfig/thunk_gen.pc
 
