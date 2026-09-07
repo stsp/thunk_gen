@@ -33,31 +33,27 @@ thunk_c1.h: thunk_c.h
 thunk_calls.h: thunk_calls.tmp
 	($(TG) $(TFLAGS) <$< >$@) || ($(RM) $@ ; false)
 
-OLDSHELL := $(SHELL)
-SHELL := /usr/bin/env bash -o pipefail
 thunk_asms.h: thunk_asms.tmp $(TGM4)
-	($(TG) $(TFLAGS) 1 <$< | $(TGS) $(TGM4) >$@_) \
+	(set -o pipefail; $(TG) $(TFLAGS) 1 <$< | $(TGS) $(TGM4) >$@_) \
 		|| ($(RM) $@_ ; false)
 	($(TG) $(TFLAGS) 2 <$< >$@__) \
 		|| ($(RM) $@__ ; false)
 	cat $@_ $@__ >$@
 	rm -f $@_ $@__
 thunk_p32.h: thunk_asms.tmp $(TGM4_32)
-	($(TG) $(TFLAGS) 1 <$< | $(TGS) $(TGM4_32) >$@_) \
+	(set -o pipefail; $(TG) $(TFLAGS) 1 <$< | $(TGS) $(TGM4_32) >$@_) \
 		|| ($(RM) $@_ ; false)
 	($(TG) $(TFLAGS) 2 <$< >$@__) \
 		|| ($(RM) $@__ ; false)
 	cat $@_ $@__ >$@
 	rm -f $@_ $@__
 thunk_c32.h: thunk_calls.tmp $(TGM4_32)
-	($(TG) $(TFLAGS) 1 <$< | $(TGS) $(TGM4_32) >$@_) \
+	(set -o pipefail; $(TG) $(TFLAGS) 1 <$< | $(TGS) $(TGM4_32) >$@_) \
 		|| ($(RM) $@_ ; false)
 	($(TG) $(TFLAGS) 2 <$< >$@__) \
 		|| ($(RM) $@__ ; false)
 	cat $@_ $@__ >$@
 	rm -f $@_ $@__
-# restore caller's shell
-SHELL := $(OLDSHELL)
 
 ifneq ($(GLOB_ASM),)
 glob_asmdefs.h: $(GLOB_ASM)
