@@ -4,6 +4,7 @@ PDS ?= $(shell pkg-config --variable=pdscript thunk_gen)
 MKADS ?= $(shell pkg-config --variable=mkadscript thunk_gen)
 TGM4 ?= $(shell pkg-config --variable=m4script thunk_gen)
 TGM4_32 ?= $(shell pkg-config --variable=m4_32script thunk_gen)
+SHELL := /usr/bin/env bash
 
 GEN_TMP = thunk_c.h thunk_p.h plt.inc plt_asmc.h plt_asmp.h thunk_c1.h \
   thunk_p1.h
