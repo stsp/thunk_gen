@@ -1,147 +1,145 @@
 #!/usr/bin/env python3
 """
 function prototype parser
-Author: Stas Sergeev / ported to PLY
+Author: Stas Sergeev / ported to SLY
 """
 
 import getopt
 import sys
+from typing import Any, Callable
 
-from ply import lex, yacc
+from sly import Lexer, Parser  # type: ignore[import-not-found]
+
+_: Callable[..., Any] = lambda *args, **kwargs: None  # Dummy definition for static type checkers (mypy)
 
 VERSION = "1.11"
 
-# Lexer tokens
-tokens = (
-    'NUM',
-    'LB',
-    'RB',
-    'SEMIC',
-    'COMMA',
-    'ASMCFUNC',
-    'ASMPASCAL',
-    'INITTEXT',
-    'SEGM',
-    'FAR',
-    'ASTER',
-    'LBR',
-    'RBR',
-    'VOID',
-    'WORD',
-    'UWORD',
-    'CHAR',
-    'BYTE',
-    'UBYTE',
-    'DWORD',
-    'UDWORD',
-    'QWORD',
-    'UQWORD',
-    'FLOAT',
-    'DOUBLE',
-    'LDOUBLE',
-    'STRUCT',
-    'UNION',
-    'CONST',
-    'OUT',
-    'NORETURN',
-    'V_FW',
-    'V_BW',
-    'STRING',
-)
 
-# Multi-word types/keywords
-def t_MULTIWORD(t):
-    r'unsigned\s+long\s+long|long\s+long|unsigned\s+short|unsigned\s+char|unsigned\s+int|unsigned\s+long|long\s+double'
-    val = " ".join(t.value.split())
-    if val == "unsigned long long":
-        t.type = 'UQWORD'
-    elif val == "long long":
-        t.type = 'QWORD'
-    elif val == "unsigned short":
-        t.type = 'UWORD'
-    elif val == "unsigned char":
-        t.type = 'UBYTE'
-    elif val == "unsigned int" or val == "unsigned long":
-        t.type = 'UDWORD'
-    elif val == "long double":
-        t.type = 'LDOUBLE'
-    return t
+class ThunkLexer(Lexer):
+    tokens = {
+        'NUM',
+        'LB',
+        'RB',
+        'SEMIC',
+        'COMMA',
+        'ASMCFUNC',
+        'ASMPASCAL',
+        'INITTEXT',
+        'SEGM',
+        'FAR',
+        'ASTER',
+        'LBR',
+        'RBR',
+        'VOID',
+        'WORD',
+        'UWORD',
+        'CHAR',
+        'BYTE',
+        'UBYTE',
+        'DWORD',
+        'UDWORD',
+        'QWORD',
+        'UQWORD',
+        'FLOAT',
+        'DOUBLE',
+        'LDOUBLE',
+        'STRUCT',
+        'UNION',
+        'CONST',
+        'OUT',
+        'NORETURN',
+        'V_FW',
+        'V_BW',
+        'STRING',
+    }
 
-def t_COMMENT(t):
-    r'/\*.*?\*/'
+    ignore = ' \t\r\n'
+    ignore_comment = r'/\*.*?\*/'
+    ignore_asmfunc = r'ASMFUNC'
 
-def t_ASMFUNC(t):
-    r'ASMFUNC'
+    LB = r'\('
+    RB = r'\)'
+    SEMIC = r';'
+    COMMA = r','
+    ASTER = r'\*'
+    LBR = r'\['
+    RBR = r'\]'
 
-t_ignore = ' \t\r\n'
+    reserved = {
+        'ASMCFUNC': 'ASMCFUNC',
+        'ASMPASCAL': 'ASMPASCAL',
+        'INITTEXT': 'INITTEXT',
+        'SEGM': 'SEGM',
+        'FAR': 'FAR',
+        'far': 'FAR',
+        'VOID': 'VOID',
+        'void': 'VOID',
+        'WORD': 'WORD',
+        'COUNT': 'WORD',
+        'BOOL': 'WORD',
+        'char': 'CHAR',
+        'short': 'WORD',
+        'UCOUNT': 'UWORD',
+        'UWORD': 'UWORD',
+        'BYTE': 'BYTE',
+        'UBYTE': 'UBYTE',
+        'int': 'DWORD',
+        'unsigned': 'UDWORD',
+        'long': 'DWORD',
+        'size_t': 'UDWORD',
+        'ssize_t': 'DWORD',
+        'int16_t': 'WORD',
+        'uint16_t': 'UWORD',
+        'int32_t': 'DWORD',
+        'uint32_t': 'UDWORD',
+        'LONG': 'DWORD',
+        'LONG32': 'DWORD',
+        'ULONG': 'UDWORD',
+        'ULONG32': 'UDWORD',
+        'DWORD': 'DWORD',
+        'UDWORD': 'UDWORD',
+        'float': 'FLOAT',
+        'double': 'DOUBLE',
+        'struct': 'STRUCT',
+        'union': 'UNION',
+        'const': 'CONST',
+        '__out': 'OUT',
+        'NORETURN': 'NORETURN',
+        '_V_FW': 'V_FW',
+        '_V_BW': 'V_BW',
+    }
 
-t_LB = r'\('
-t_RB = r'\)'
-t_SEMIC = r';'
-t_COMMA = r','
-t_ASTER = r'\*'
-t_LBR = r'\['
-t_RBR = r'\]'
+    @_(r'unsigned\s+long\s+long|long\s+long|unsigned\s+short|unsigned\s+char|unsigned\s+int|unsigned\s+long|long\s+double')
+    def MULTIWORD(self, t):
+        val = " ".join(t.value.split())
+        if val == "unsigned long long":
+            t.type = 'UQWORD'
+        elif val == "long long":
+            t.type = 'QWORD'
+        elif val == "unsigned short":
+            t.type = 'UWORD'
+        elif val == "unsigned char":
+            t.type = 'UBYTE'
+        elif val == "unsigned int" or val == "unsigned long":
+            t.type = 'UDWORD'
+        elif val == "long double":
+            t.type = 'LDOUBLE'
+        return t
 
-reserved = {
-    'ASMCFUNC': 'ASMCFUNC',
-    'ASMPASCAL': 'ASMPASCAL',
-    'INITTEXT': 'INITTEXT',
-    'SEGM': 'SEGM',
-    'FAR': 'FAR',
-    'far': 'FAR',
-    'VOID': 'VOID',
-    'void': 'VOID',
-    'WORD': 'WORD',
-    'COUNT': 'WORD',
-    'BOOL': 'WORD',
-    'char': 'CHAR',
-    'short': 'WORD',
-    'UCOUNT': 'UWORD',
-    'UWORD': 'UWORD',
-    'BYTE': 'BYTE',
-    'UBYTE': 'UBYTE',
-    'int': 'DWORD',
-    'unsigned': 'UDWORD',
-    'long': 'DWORD',
-    'size_t': 'UDWORD',
-    'ssize_t': 'DWORD',
-    'int16_t': 'WORD',
-    'uint16_t': 'UWORD',
-    'int32_t': 'DWORD',
-    'uint32_t': 'UDWORD',
-    'LONG': 'DWORD',
-    'LONG32': 'DWORD',
-    'ULONG': 'UDWORD',
-    'ULONG32': 'UDWORD',
-    'DWORD': 'DWORD',
-    'UDWORD': 'UDWORD',
-    'float': 'FLOAT',
-    'double': 'DOUBLE',
-    'struct': 'STRUCT',
-    'union': 'UNION',
-    'const': 'CONST',
-    '__out': 'OUT',
-    'NORETURN': 'NORETURN',
-    '_V_FW': 'V_FW',
-    '_V_BW': 'V_BW',
-}
+    @_(r'[0-9]+')
+    def NUM(self, t):
+        t.value = int(t.value)
+        return t
 
-def t_NUM(t):
-    r'[0-9]+'
-    t.value = int(t.value)
-    return t
+    @_(r'[_A-Za-z][_A-Za-z0-9]*')
+    def STRING(self, t):
+        t.type = self.reserved.get(t.value, 'STRING')
+        return t
 
-def t_STRING(t):
-    r'[_A-Za-z][_A-Za-z0-9]*'
-    t.type = reserved.get(t.value, 'STRING')
-    return t
+    def error(self, t):
+        sys.stderr.write(f"Illegal character '{t.value[0]}'\n")
+        self.index += 1
 
-def t_error(t):
-    sys.stderr.write(f"Illegal character '{t.value[0]}'\n")
-    t.lexer.skip(1)
-
-lexer = lex.lex()
 
 # State variables
 tg_abi = 3
@@ -387,394 +385,404 @@ def ATYPE3(stype):
     if al_arg_size > arg_size:
         atype3 += al_s_type() if stype == 's' else al_u_type()
 
-# Parser rules
 
-def p_input(p):
-    '''input : lines'''
+class ThunkParser(Parser):
+    tokens = ThunkLexer.tokens
 
-def p_lines(p):
-    '''lines : lines line
-             | empty'''
+    @_('lines')
+    def input(self, p):
+        pass
 
-def p_line(p):
-    '''line : lnum rdecls fname lb args rb attrs SEMIC'''
-    global rlen
-    num_val = p[1]
-    fname_val = p[3]
+    @_('lines line',
+       'empty')
+    def lines(self, p):
+        pass
 
-    if is_rptr:
-        rt = "_RET_PTR"
-        rv = "_ARG_RPTR"
-        rlen = ptr_size
-        if is_rfar:
-            rlen *= 2
-            rt = "_RET_PTR_FAR"
-            rv = "_ARG_RPTR_FAR"
-    else:
-        rt = "_RET"
-        rv = "_ARG_R"
+    @_('lnum rdecls fname lb args rb attrs SEMIC')
+    def line(self, p):
+        global rlen
+        num_val = p.lnum
+        fname_val = p.fname
 
-    if thunk_type == 0:
-        if not is_rvoid:
-            if abuf:
-                print(f"\tcase {num_val}:\n\t\t_DISPATCH({rlen}, {rv}({rtbuf}), {rt}, {fname_val}, {abuf});\n\t\tbreak;")
-            else:
-                print(f"\tcase {num_val}:\n\t\t_DISPATCH({rlen}, {rv}({rtbuf}), {rt}, {fname_val});\n\t\tbreak;")
+        if is_rptr:
+            rt = "_RET_PTR"
+            rv = "_ARG_RPTR"
+            rlen = ptr_size
+            if is_rfar:
+                rlen *= 2
+                rt = "_RET_PTR_FAR"
+                rv = "_ARG_RPTR_FAR"
         else:
-            if abuf:
-                print(f"\tcase {num_val}:\n\t\t_DISPATCH_v({fname_val}, {abuf});\n\t\tbreak;")
+            rt = "_RET"
+            rv = "_ARG_R"
+
+        if thunk_type == 0:
+            if not is_rvoid:
+                if abuf:
+                    print(f"\tcase {num_val}:\n\t\t_DISPATCH({rlen}, {rv}({rtbuf}), {rt}, {fname_val}, {abuf});\n\t\tbreak;")
+                else:
+                    print(f"\tcase {num_val}:\n\t\t_DISPATCH({rlen}, {rv}({rtbuf}), {rt}, {fname_val});\n\t\tbreak;")
             else:
-                print(f"\tcase {num_val}:\n\t\t_DISPATCH_v({fname_val});\n\t\tbreak;")
-    elif thunk_type == 1:
-        is_v = 1 if (is_rvoid and not is_rptr) else 0
-        if not is_v and is_noret:
-            yyerror("non-void noret?")
-        elif is_noret:
-            is_v += 1
-        pas_str = "_P" if is_pas else ""
-        v_str = "_v" if is_v else ""
-        nr_str = "_nr" if is_noret else ""
-        print(f"THUNK({arg_num}, {is_v}, {is_pas}, {pas_str}{v_str}{nr_str})")
-    elif thunk_type == 2:
-        pas_str = "_P" if is_pas else ""
-        if not is_rvoid or is_rptr:
-            if is_rptr:
-                arg_type_str = "__ARG_PTR_FAR" if is_rfar else "__ARG_PTR"
-                ret_type_str = "__RET_PTR_FAR" if is_rfar else "__RET_PTR"
-            else:
-                arg_type_str = "__ARG"
-                ret_type_str = "__RET"
-            sys.stdout.write(f"_THUNK{arg_num}{pas_str}({num_val}, {arg_type_str}({rtbuf}), {ret_type_str}, {fname_val}")
-        else:
+                if abuf:
+                    print(f"\tcase {num_val}:\n\t\t_DISPATCH_v({fname_val}, {abuf});\n\t\tbreak;")
+                else:
+                    print(f"\tcase {num_val}:\n\t\t_DISPATCH_v({fname_val});\n\t\tbreak;")
+        elif thunk_type == 1:
+            is_v = 1 if (is_rvoid and not is_rptr) else 0
+            if not is_v and is_noret:
+                yyerror("non-void noret?")
+            elif is_noret:
+                is_v += 1
+            pas_str = "_P" if is_pas else ""
+            v_str = "_v" if is_v else ""
             nr_str = "_nr" if is_noret else ""
-            noret_str = "__NORET " if is_noret else ""
-            sys.stdout.write(f"_THUNK{arg_num}{pas_str}_v{nr_str}({num_val}, {noret_str}void, {fname_val}")
-        if arg_num:
-            sys.stdout.write(f", {abuf}")
-        sys.stdout.write(f", {get_flags()})\n")
+            print(f"THUNK({arg_num}, {is_v}, {is_pas}, {pas_str}{v_str}{nr_str})")
+        elif thunk_type == 2:
+            pas_str = "_P" if is_pas else ""
+            if not is_rvoid or is_rptr:
+                if is_rptr:
+                    arg_type_str = "__ARG_PTR_FAR" if is_rfar else "__ARG_PTR"
+                    ret_type_str = "__RET_PTR_FAR" if is_rfar else "__RET_PTR"
+                else:
+                    arg_type_str = "__ARG"
+                    ret_type_str = "__RET"
+                sys.stdout.write(f"_THUNK{arg_num}{pas_str}({num_val}, {arg_type_str}({rtbuf}), {ret_type_str}, {fname_val}")
+            else:
+                nr_str = "_nr" if is_noret else ""
+                noret_str = "__NORET " if is_noret else ""
+                sys.stdout.write(f"_THUNK{arg_num}{pas_str}_v{nr_str}({num_val}, {noret_str}void, {fname_val}")
+            if arg_num:
+                sys.stdout.write(f", {abuf}")
+            sys.stdout.write(f", {get_flags()})\n")
 
-def p_lb(p):
-    '''lb : LB'''
-    global arg_offs, arg_num
-    arg_offs = 0
-    arg_num = 0
-    beg_arg()
+    @_('LB')
+    def lb(self, p):
+        global arg_offs, arg_num
+        arg_offs = 0
+        arg_num = 0
+        beg_arg()
 
-def p_rb(p):
-    '''rb : RB'''
-    fin_arg(1)
+    @_('RB')
+    def rb(self, p):
+        fin_arg(1)
 
-def p_lnum(p):
-    '''lnum : num'''
-    init_line()
-    p[0] = p[1]
+    @_('num')
+    def lnum(self, p):
+        init_line()
+        return p.num
 
-def p_num(p):
-    '''num : NUM'''
-    p[0] = p[1]
+    @_('NUM')
+    def num(self, p):
+        return p.NUM
 
-def p_fname(p):
-    '''fname : STRING'''
-    p[0] = p[1]
+    @_('STRING')
+    def fname(self, p):
+        return p.STRING
 
-def p_sname(p):
-    '''sname : STRING'''
-    p[0] = p[1]
+    @_('STRING')
+    def sname(self, p):
+        return p.STRING
 
-def p_tname(p):
-    '''tname : STRING'''
-    p[0] = p[1]
+    @_('STRING')
+    def tname(self, p):
+        return p.STRING
 
-def p_cname(p):
-    '''cname : STRING'''
-    p[0] = p[1]
+    @_('STRING')
+    def cname(self, p):
+        return p.STRING
 
-def p_rquals(p):
-    '''rquals : FAR ASTER
-              | ASTER'''
-    global is_rfar, is_rptr
-    if len(p) == 3:
-        is_rfar = 1
-        is_rptr = 1
-    else:
-        is_rptr = 1
+    @_('FAR ASTER',
+       'ASTER')
+    def rquals(self, p):
+        global is_rfar, is_rptr
+        if len(p) == 2:
+            is_rfar = 1
+            is_rptr = 1
+        else:
+            is_rptr = 1
 
-def p_quals(p):
-    '''quals : FAR quals
-             | ASTER quals
-             | empty'''
-    global is_far, is_ptr
-    if len(p) == 3:
-        tok = p[1]
-        if tok == 'FAR' or tok == 'far':
-            is_far = 1
-        elif tok == '*':
-            is_ptr = 1
+    @_('FAR quals',
+       'ASTER quals',
+       'empty')
+    def quals(self, p):
+        global is_far, is_ptr
+        if len(p) == 2:
+            tok = p[0]
+            if tok == 'FAR' or tok == 'far':
+                is_far = 1
+            elif tok == '*':
+                is_ptr = 1
 
-def p_arr(p):
-    '''arr : LBR num RBR
-           | LBR RBR'''
-    global cvtype, is_arr, arr_sz
-    cvtype = CVTYPE_CHAR_ARR if cvtype == CVTYPE_CHAR else CVTYPE_ARR
-    is_arr = 1
-    if len(p) == 4:
-        arr_sz = p[2]
-    else:
-        arr_sz = -1
+    @_('LBR num RBR',
+       'LBR RBR')
+    def arr(self, p):
+        global cvtype, is_arr, arr_sz
+        cvtype = CVTYPE_CHAR_ARR if cvtype == CVTYPE_CHAR else CVTYPE_ARR
+        is_arr = 1
+        if len(p) == 3:
+            arr_sz = p.num
+        else:
+            arr_sz = -1
 
-def p_fatr(p):
-    '''fatr : ASMCFUNC
-            | ASMPASCAL
-            | INITTEXT
-            | NORETURN
-            | FAR
-            | SEGM LB STRING RB'''
-    global is_pas, is_init, is_noret, is_ffar
-    tok = p[1]
-    if tok == 'ASMPASCAL':
-        is_pas = 1
-    elif tok == 'INITTEXT':
-        is_init = 1
-    elif tok == 'NORETURN':
+    @_('ASMCFUNC',
+       'ASMPASCAL',
+       'INITTEXT',
+       'NORETURN',
+       'FAR',
+       'SEGM LB STRING RB')
+    def fatr(self, p):
+        global is_pas, is_init, is_noret, is_ffar
+        tok = p[0]
+        if tok == 'ASMPASCAL':
+            is_pas = 1
+        elif tok == 'INITTEXT':
+            is_init = 1
+        elif tok == 'NORETURN':
+            is_noret = 1
+        elif tok == 'FAR' or tok == 'far':
+            is_ffar = 1
+
+    @_('fatr fatrs',
+       'fatr')
+    def fatrs(self, p):
+        pass
+
+    @_('NORETURN')
+    def attr(self, p):
+        global is_noret
         is_noret = 1
-    elif tok == 'FAR' or tok == 'far':
-        is_ffar = 1
 
-def p_fatrs(p):
-    '''fatrs : fatr fatrs
-             | fatr'''
+    @_('attr attrs',
+       'empty')
+    def attrs(self, p):
+        pass
 
-def p_attr(p):
-    '''attr : NORETURN'''
-    global is_noret
-    is_noret = 1
+    @_('rquals fatrs',
+       'rquals',
+       'fatrs',
+       'empty')
+    def rq_fa(self, p):
+        pass
 
-def p_attrs(p):
-    '''attrs : attr attrs
-             | empty'''
+    @_('VOID',
+       'WORD',
+       'UWORD',
+       'DWORD',
+       'UDWORD',
+       'QWORD',
+       'UQWORD',
+       'FLOAT',
+       'DOUBLE',
+       'LDOUBLE',
+       'BYTE',
+       'CHAR',
+       'UBYTE')
+    def rtype(self, p):
+        global rlen, rtbuf, is_rvoid
+        item = p._slice[0]
+        tok_type = item.type if hasattr(item, 'type') else item.name
+        if tok_type == 'VOID':
+            rlen = 0
+            rtbuf = "void"
+            is_rvoid = 1
+        elif tok_type == 'WORD':
+            rlen = 2
+            rtbuf = "WORD"
+        elif tok_type == 'UWORD':
+            rlen = 2
+            rtbuf = "UWORD"
+        elif tok_type == 'DWORD':
+            rlen = 4
+            rtbuf = "DWORD"
+        elif tok_type == 'UDWORD':
+            rlen = 4
+            rtbuf = "UDWORD"
+        elif tok_type == 'QWORD':
+            rlen = 8
+            rtbuf = "QWORD"
+        elif tok_type == 'UQWORD':
+            rlen = 8
+            rtbuf = "UQWORD"
+        elif tok_type == 'FLOAT':
+            rlen = 4
+            rtbuf = "float"
+        elif tok_type == 'DOUBLE':
+            rlen = 8
+            rtbuf = "double"
+        elif tok_type == 'LDOUBLE':
+            rlen = 12
+            rtbuf = "long double"
+        elif tok_type == 'BYTE':
+            rlen = 1
+            rtbuf = "BYTE"
+        elif tok_type == 'CHAR':
+            rlen = 1
+            rtbuf = "char"
+        elif tok_type == 'UBYTE':
+            rlen = 1
+            rtbuf = "UBYTE"
 
-def p_rq_fa(p):
-    '''rq_fa : rquals fatrs
-             | rquals
-             | fatrs
-             | empty'''
+    @_('V_FW LB NUM RB',
+       'V_BW LB NUM RB')
+    def vref(self, p):
+        global ref_inc, ref_mult
+        if p[0] == '_V_FW':
+            ref_inc = 1
+        else:
+            ref_inc = -1
+        ref_mult = p.NUM
 
-def p_rtype(p):
-    '''rtype : VOID
-             | WORD
-             | UWORD
-             | DWORD
-             | UDWORD
-             | QWORD
-             | UQWORD
-             | FLOAT
-             | DOUBLE
-             | LDOUBLE
-             | BYTE
-             | CHAR
-             | UBYTE'''
-    global rlen, rtbuf, is_rvoid
-    tok_type = p.slice[1].type
-    if tok_type == 'VOID':
-        rlen = 0
-        rtbuf = "void"
-        is_rvoid = 1
-    elif tok_type == 'WORD':
-        rlen = 2
-        rtbuf = "WORD"
-    elif tok_type == 'UWORD':
-        rlen = 2
-        rtbuf = "UWORD"
-    elif tok_type == 'DWORD':
-        rlen = 4
-        rtbuf = "DWORD"
-    elif tok_type == 'UDWORD':
-        rlen = 4
-        rtbuf = "UDWORD"
-    elif tok_type == 'QWORD':
-        rlen = 8
-        rtbuf = "QWORD"
-    elif tok_type == 'UQWORD':
-        rlen = 8
-        rtbuf = "UQWORD"
-    elif tok_type == 'FLOAT':
-        rlen = 4
-        rtbuf = "float"
-    elif tok_type == 'DOUBLE':
-        rlen = 8
-        rtbuf = "double"
-    elif tok_type == 'LDOUBLE':
-        rlen = 12
-        rtbuf = "long double"
-    elif tok_type == 'BYTE':
-        rlen = 1
-        rtbuf = "BYTE"
-    elif tok_type == 'CHAR':
-        rlen = 1
-        rtbuf = "char"
-    elif tok_type == 'UBYTE':
-        rlen = 1
-        rtbuf = "UBYTE"
-
-def p_vref(p):
-    '''vref : V_FW LB NUM RB
-            | V_BW LB NUM RB'''
-    global ref_inc, ref_mult
-    if p[1] == '_V_FW':
-        ref_inc = 1
-    else:
-        ref_inc = -1
-    ref_mult = p[3]
-
-def p_atype(p):
-    '''atype : VOID vref
-             | VOID
-             | CHAR
-             | WORD
-             | UWORD
-             | DWORD
-             | UDWORD
-             | QWORD
-             | UQWORD
-             | FLOAT
-             | DOUBLE
-             | LDOUBLE
-             | BYTE
-             | UBYTE
-             | VOID LB ASTER cname RB LB VOID RB
-             | STRUCT sname
-             | UNION sname
-             | tname'''
-    global arg_size, cvtype, atype, al_arg_size, is_void, is_cbk
-    tok_type = p.slice[1].type
-    if tok_type == 'VOID':
-        if len(p) == 9: # VOID ( * cname ) ( VOID )
+    @_('VOID vref',
+       'VOID',
+       'CHAR',
+       'WORD',
+       'UWORD',
+       'DWORD',
+       'UDWORD',
+       'QWORD',
+       'UQWORD',
+       'FLOAT',
+       'DOUBLE',
+       'LDOUBLE',
+       'BYTE',
+       'UBYTE',
+       'VOID LB ASTER cname RB LB VOID RB',
+       'STRUCT sname',
+       'UNION sname',
+       'tname')
+    def atype(self, p):
+        global arg_size, cvtype, atype, al_arg_size, is_void, is_cbk
+        item = p._slice[0]
+        tok_type = item.type if hasattr(item, 'type') else item.name
+        if tok_type == 'VOID':
+            if len(p) == 8:
+                arg_size = 4
+                is_cbk = 1
+                atype += "VOID"
+                al_arg_size = AL(arg_size)
+            elif len(p) == 2:
+                arg_size = 0
+                cvtype = CVTYPE_VOID
+                atype += "VOID"
+                al_arg_size = AL(arg_size)
+                is_void = 1
+            else:
+                arg_size = 0
+                cvtype = CVTYPE_VOID
+                atype += "VOID"
+                al_arg_size = AL(arg_size)
+                is_void = 1
+        elif tok_type == 'CHAR':
+            arg_size = 1
+            cvtype = CVTYPE_CHAR
+            atype += "char"
+            al_arg_size = AL(arg_size)
+            ATYPE3('s')
+        elif tok_type == 'WORD':
+            arg_size = 2
+            atype += "WORD"
+            al_arg_size = AL(arg_size)
+            ATYPE3('s')
+        elif tok_type == 'UWORD':
+            arg_size = 2
+            atype += "UWORD"
+            al_arg_size = AL(arg_size)
+            ATYPE3('u')
+        elif tok_type == 'DWORD':
             arg_size = 4
-            is_cbk = 1
-            atype += "VOID"
+            atype += "DWORD"
             al_arg_size = AL(arg_size)
-        elif len(p) == 3: # VOID vref
-            arg_size = 0
-            cvtype = CVTYPE_VOID
-            atype += "VOID"
+        elif tok_type == 'UDWORD':
+            arg_size = 4
+            atype += "UDWORD"
             al_arg_size = AL(arg_size)
-            is_void = 1
-        else: # VOID
-            arg_size = 0
-            cvtype = CVTYPE_VOID
-            atype += "VOID"
+        elif tok_type == 'QWORD':
+            arg_size = 8
+            atype += "QWORD"
             al_arg_size = AL(arg_size)
-            is_void = 1
-    elif tok_type == 'CHAR':
-        arg_size = 1
-        cvtype = CVTYPE_CHAR
-        atype += "char"
-        al_arg_size = AL(arg_size)
-        ATYPE3('s')
-    elif tok_type == 'WORD':
-        arg_size = 2
-        atype += "WORD"
-        al_arg_size = AL(arg_size)
-        ATYPE3('s')
-    elif tok_type == 'UWORD':
-        arg_size = 2
-        atype += "UWORD"
-        al_arg_size = AL(arg_size)
-        ATYPE3('u')
-    elif tok_type == 'DWORD':
-        arg_size = 4
-        atype += "DWORD"
-        al_arg_size = AL(arg_size)
-    elif tok_type == 'UDWORD':
-        arg_size = 4
-        atype += "UDWORD"
-        al_arg_size = AL(arg_size)
-    elif tok_type == 'QWORD':
-        arg_size = 8
-        atype += "QWORD"
-        al_arg_size = AL(arg_size)
-    elif tok_type == 'UQWORD':
-        arg_size = 8
-        atype += "UQWORD"
-        al_arg_size = AL(arg_size)
-    elif tok_type == 'FLOAT':
-        arg_size = 4
-        atype += "float"
-        al_arg_size = AL(arg_size)
-    elif tok_type == 'DOUBLE':
-        arg_size = 8
-        atype += "double"
-        al_arg_size = AL(arg_size)
-    elif tok_type == 'LDOUBLE':
-        arg_size = 12
-        atype += "long double"
-        al_arg_size = AL(arg_size)
-    elif tok_type == 'BYTE':
-        arg_size = 1
-        atype += "BYTE"
-        al_arg_size = AL(arg_size)
-        ATYPE3('s')
-    elif tok_type == 'UBYTE':
-        arg_size = 1
-        atype += "UBYTE"
-        al_arg_size = AL(arg_size)
-        ATYPE3('u')
-    elif tok_type == 'STRUCT':
-        arg_size = -1
-        atype += f"struct {p[2]}"
-    elif tok_type == 'UNION':
-        arg_size = -1
-        atype += f"union {p[2]}"
-    else:
-        arg_size = -1
-        atype += f"{p[1]}"
+        elif tok_type == 'UQWORD':
+            arg_size = 8
+            atype += "UQWORD"
+            al_arg_size = AL(arg_size)
+        elif tok_type == 'FLOAT':
+            arg_size = 4
+            atype += "float"
+            al_arg_size = AL(arg_size)
+        elif tok_type == 'DOUBLE':
+            arg_size = 8
+            atype += "double"
+            al_arg_size = AL(arg_size)
+        elif tok_type == 'LDOUBLE':
+            arg_size = 12
+            atype += "long double"
+            al_arg_size = AL(arg_size)
+        elif tok_type == 'BYTE':
+            arg_size = 1
+            atype += "BYTE"
+            al_arg_size = AL(arg_size)
+            ATYPE3('s')
+        elif tok_type == 'UBYTE':
+            arg_size = 1
+            atype += "UBYTE"
+            al_arg_size = AL(arg_size)
+            ATYPE3('u')
+        elif tok_type == 'STRUCT':
+            arg_size = -1
+            atype += f"struct {p.sname}"
+        elif tok_type == 'UNION':
+            arg_size = -1
+            atype += f"union {p.sname}"
+        else:
+            arg_size = -1
+            atype += f"{p.tname}"
 
-def p_rdecls(p):
-    '''rdecls : rtype rq_fa'''
-    global abuf
-    abuf = ""
+    @_('rtype rq_fa')
+    def rdecls(self, p):
+        global abuf
+        abuf = ""
 
-def p_adecls(p):
-    '''adecls : atype quals
-              | CONST atype quals
-              | OUT atype quals'''
-    global is_const, is_out
-    if p[1] == 'CONST' or p[1] == 'const':
-        is_const = 1
-    elif p[1] == 'OUT' or p[1] == '__out':
-        is_out = 1
+    @_('atype quals',
+       'CONST atype quals',
+       'OUT atype quals')
+    def adecls(self, p):
+        global is_const, is_out
+        if p[0] == 'CONST' or p[0] == 'const':
+            is_const = 1
+        elif p[0] == 'OUT' or p[0] == '__out':
+            is_out = 1
 
-def p_argsep(p):
-    '''argsep : COMMA'''
-    global abuf
-    fin_arg(0)
-    abuf += ", "
-    beg_arg()
+    @_('COMMA')
+    def argsep(self, p):
+        global abuf
+        fin_arg(0)
+        abuf += ", "
+        beg_arg()
 
-def p_args(p):
-    '''args : args argsep arg
-            | arg'''
+    @_('args argsep arg',
+       'arg')
+    def args(self, p):
+        pass
 
-def p_arg(p):
-    '''arg : adecls STRING arr
-           | adecls STRING
-           | adecls'''
+    @_('adecls STRING arr',
+       'adecls STRING',
+       'adecls')
+    def arg(self, p):
+        pass
 
-def p_empty(p):
-    '''empty :'''
+    @_('')
+    def empty(self, p):
+        pass
 
-def p_error(p):
-    if p:
-        sys.stderr.write(f"Parse error near '{p.value}'\n")
-    else:
-        sys.stderr.write("Parse error at EOF\n")
-    sys.exit(1)
+    def error(self, p):
+        if p:
+            sys.stderr.write(f"Parse error near '{p.value}'\n")
+        else:
+            sys.stderr.write("Parse error at EOF\n")
+        sys.exit(1)
 
-parser = yacc.yacc(write_tables=False, debug=False)
 
 def main():
     global align, ptr_size, thunk_type
-    yydebug = 0
 
     try:
         opts, args = getopt.getopt(sys.argv[1:], "dp:a:")
@@ -788,7 +796,7 @@ def main():
         elif o == "-p":
             ptr_size = int(a)
         elif o == "-d":
-            yydebug = 1
+            pass
 
     if args:
         thunk_type = int(args[0])
@@ -822,7 +830,9 @@ def main():
 
     data = sys.stdin.read()
     if data:
-        parser.parse(data, lexer=lexer, debug=yydebug)
+        lexer = ThunkLexer()
+        parser = ThunkParser()
+        parser.parse(lexer.tokenize(data))
 
 if __name__ == '__main__':
     main()
